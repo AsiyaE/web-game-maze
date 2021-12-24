@@ -1,0 +1,42 @@
+body{
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-size: 18px;;
+}
+
+h1{
+	text-align: center;
+}
+
+.content{
+	padding:1em;
+
+	margin:0 auto;
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+}
+.person{
+	display:flex;
+	flex-direction: row; 
+	align-items: flex-start;
+	margin-top:15px;
+	margin-bottom: 15px;
+}
+.life, .money{
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+	margin-left: 30px;
+	padding-top: 5px;
+}
+
+button {
+	color: #fff; 
+	text-decoration: none; 
+	user-select: none; /* убирать выделение текста */
+	background: rgb(34,139,34); 
+	padding: .7em 1.5em; 
+	outline: none; /* убирать контур в Mozilla */
+} 
+button:hover { background: rgb(50,205,50) ; } /* при наведении курсора мышки */
+button:active { background: rgb(152,15,0); } /* при нажатии */
