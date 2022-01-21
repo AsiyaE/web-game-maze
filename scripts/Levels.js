@@ -4,6 +4,12 @@ export class Levels{
 		/** @type {Maze} */
 		maze;
 
+	/**
+	 * Выбор уровня
+	 * 
+	 * @param {NodeListOf<Element>} buttons Кнопки выбора уровня
+	 * @param {Maze} maze Связанный калькулятор
+	 */
 	constructor(buttons,maze){
 		this.maze = maze;
 		this._handleButtonClick = this._handleButtonClick.bind( this );
@@ -13,10 +19,9 @@ export class Levels{
 		}
 	}
 
-/**
-	 * Обработчик нажатия на кнопки
+	/**
+	 * Обработчик нажатия на кнопки уровней
 	 * 
-	 * @private
 	 * @param {Event} event
 	 */
 	 _handleButtonClick( event )
@@ -31,19 +36,27 @@ export class Levels{
 		const level = target.dataset.level|| '';
 		let imgL;
 		let x,y
-		switch(level){
+		switch(level){ /*временно*/ 
 			case "easy":
-				imgL="img/easy_maze.png";
-				x=194;
+				imgL="img/medium_level.png";
+				x=210;
 				y=0;
+				this.maze.exitX=260;
+				this.maze.exitY=460;
 				break;
 			case "medium":
-				imgL="img/maze10.png";
-				x=165;
+				imgL="img/medium_level.png";
+				x=210;
 				y=0;
+				this.maze.exitX=260;
+				this.maze.exitY=460;
 				break;
 			case "hard":
-				imgL="img/easy_maze.png";
+				imgL="img/medium_level.png";
+				x=210;
+				y=0;
+				this.maze.exitX=260;
+				this.maze.exitY=460;
 				break;
 			 default:
 				throw new Error( `Unknown level "${level}"` );
