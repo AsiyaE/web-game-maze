@@ -47,8 +47,7 @@ export class Person{
 			status[0].textContent=this.#life;
 		}
 		else{
-			const pl=document.querySelectorAll( 'div.person' );
-			pl.textContent='Game over';
+			this.die();
 		}
 		
 	}

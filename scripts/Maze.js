@@ -14,26 +14,30 @@ import { Enemies } from "./Enemies.js";
 	lastChange=0;
 	/** @type {number} */
 	frame=0;
-
+	time=0;
 	imgM = new Image();
 	exit=new Image();
-	exitX=-1;exitY=-1;
+	exitX=-1;
+	exitY=-1;
 
 	constructor(person){
 		this.person=person;
 		this.exit.src="img/diamond.png"; 
 		this.handleKeyDown = this.handleKeyDown.bind( this );
 	}
-
+	
 	/**
-	 * Блокирует движение игрока по полю
+	 * Убирает слушатели и перерисовку кадров
 	*/
 	clean(){
 		document.removeEventListener('keydown',this.handleKeyDown);
+		window.cancelAnimationFrame(this.time);
 	}
 
-	// gameOver(){
-	// }
+	gameOver(){
+		alert("GameOver!!!");
+		this.clean();
+	}
 
 	/**
 	 * Проверяет, пройден ли уровень
@@ -42,6 +46,7 @@ import { Enemies } from "./Enemies.js";
 		 
 		if ((Math.abs(this.person.x-this.exitX)<10)&&(Math.abs(this.person.y-this.exitY)<10)){
 			alert("Win!!!");
+			this.clean();
 			return true;
 		}
 		return false;
@@ -57,7 +62,7 @@ import { Enemies } from "./Enemies.js";
 			let place=document.querySelector(".content");
 			place.appendChild(this.canvas); 
 		}
-	
+		
 		this.context=this.canvas.getContext("2d");
 		this.imgM.src = file;
 		this.imgM.onload = () =>this.#draw(x,y);
@@ -85,19 +90,18 @@ import { Enemies } from "./Enemies.js";
 		
 		document.addEventListener('keydown',this.handleKeyDown); 
 		this.person.setLocation(x,y);
-		this.drawFrame(0);
+		this.drawFrame();
 	
 	}
 
 	/**
 	 * перерисовывает состояние игры
 	 * 
-	 *  @param {number} time начальное время
 	*/
-	drawFrame(time){
+	drawFrame(){
 		if(!this.isLevelPassed()){
-			if(time-this.lastChange>1000){
-				this.lastChange=time;
+			if(this.time-this.lastChange>1000){
+				this.lastChange=this.time;
 				this.frame++;
 				if(this.frame===6){
 					this.frame=0;
@@ -135,7 +139,7 @@ import { Enemies } from "./Enemies.js";
 			this.context.drawImage(character, this.person.x, this.person.y);
 			this.coins.draw();
 			this.enemies.draw();
-			time=window.requestAnimationFrame(this.drawFrame.bind(this));
+			this.time=window.requestAnimationFrame(this.drawFrame.bind(this));
 	}
 	}
 

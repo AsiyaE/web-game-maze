@@ -10,5 +10,6 @@ function main()
 	player.getPersonStatus();
 	const buttons = document.querySelectorAll( 'div.buttons>button' );
 	const maze = new Maze(player);
+	player.die=maze.gameOver;
 	const level = new Levels(buttons,maze);
 }
