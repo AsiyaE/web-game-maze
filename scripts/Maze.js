@@ -3,23 +3,43 @@ import { Coins } from "./Coins.js";
 import { Enemies } from "./Enemies.js";
 
 /**
- * Составляющие лабиринта
+ * Лабиринт
  */
  export class Maze{
+
 	/** @type {Person} */
 	person;
+
+	/** @type {HTMLCanvasElement}*/
 	canvas;
+
+	/** @type {CanvasRenderingContext2D}*/
 	context;
+
 	/** @type {number} */
 	lastChange=0;
+
 	/** @type {number} */
 	frame=0;
+
+	/** @type {number} */
 	time=0;
+
+	/** @type {HTMLImageElement} */
 	imgM = new Image();
+
+	/** @type {HTMLImageElement} */
 	exit=new Image();
+
+	/** @type {number} */
 	exitX=-1;
+
+	/** @type {number} */
 	exitY=-1;
 
+	/**
+	 * @type {Person} person
+	*/
 	constructor(person){
 		this.person=person;
 		this.exit.src="img/diamond.png"; 
@@ -34,8 +54,12 @@ import { Enemies } from "./Enemies.js";
 		window.cancelAnimationFrame(this.time);
 	}
 
+	/**
+	 * Отображает результат - поражение
+	*/
 	gameOver(){
-		alert("GameOver!!!");
+		let res=document.getElementById("result");
+		res.textContent="Конец игры";
 		this.clean();
 	}
 
@@ -44,43 +68,64 @@ import { Enemies } from "./Enemies.js";
 	*/
 	isLevelPassed(){
 		 
-		if ((Math.abs(this.person.x-this.exitX)<10)&&(Math.abs(this.person.y-this.exitY)<10)){
-			alert("Win!!!");
+		if ((Math.abs(this.person.x-this.exitX)<15)&&(Math.abs(this.person.y-this.exitY)<15)){
+			
 			this.clean();
+			if(this.person.curLevel<3){
+				this.person.curLevel++;
+				let next=document.getElementById(this.person.curLevel);
+				next.disabled=0;
+			}
+			else{
+				let res=document.getElementById("result");
+				res.textContent="Победа!";
+			}
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Устанавливает поле 
+	 * Устанавливает поле и размещение персонажей
+	 * @param {string} file URL
+	 * @param {number} x координата x персонажа
+	 * @param {number} y координата y персонажа
+	 * @param {{x: number, y: number }[]} enemLocation расположение врагов
+	 * @param {{x: number, y: number }[]} coinsLocation расположение монет
 	*/
-	setMaze(file,x,y){
+	setMaze(file,x,y,enemLocation,coinsLocation){
 
 		if (this.canvas===undefined){
 			this.canvas=document.createElement("canvas");
 			let place=document.querySelector(".content");
 			place.appendChild(this.canvas); 
 		}
-		
+		let block=document.querySelector( 'body' );
+		block.style.flexDirection = "row-reverse";
+
+		this.coins=new Coins(this);
+		this.enemies=new Enemies(this);
+
+		this.coins.setPlace(coinsLocation);
+		this.enemies.setPlace(enemLocation);
+		this.person.setLocation(x,y);
+
 		this.context=this.canvas.getContext("2d");
 		this.imgM.src = file;
 		this.imgM.onload = () =>this.#draw(x,y);
+
 	}
 
 	/**
 	 * Рисует начальное положение объектов на поле
 	 * @private
+	 * @param {number} x координата x персонажа
+	 * @param {number} y координата y персонажа
 	*/
 	#draw(x,y){
+		
 		this.canvas.width = this.imgM.width; 
 		this.canvas.height = this.imgM.height;
-		
-		this.coins=new Coins(this);
-		this.enemies=new Enemies(this);
-		this.coins.setPlace();
-		this.enemies.setPlace();
-
 		this.context.drawImage(this.imgM, 0,0);
 		this.coins.draw();
 		this.enemies.draw();
@@ -89,7 +134,6 @@ import { Enemies } from "./Enemies.js";
 		this.context.drawImage(this.exit,this.exitX,this.exitY);
 		
 		document.addEventListener('keydown',this.handleKeyDown); 
-		this.person.setLocation(x,y);
 		this.drawFrame();
 	
 	}
@@ -99,21 +143,23 @@ import { Enemies } from "./Enemies.js";
 	 * 
 	*/
 	drawFrame(){
-		if(!this.isLevelPassed()){
-			if(this.time-this.lastChange>1000){
+		if((!this.isLevelPassed())&&(this.person.getLifeStatus()>0)){
+			if(this.time-this.lastChange>50){
 				this.lastChange=this.time;
 				this.frame++;
 				if(this.frame===6){
 					this.frame=0;
 				}
 			}
+			this.time=window.requestAnimationFrame(this.drawFrame.bind(this));
+
 			if (this.person.dx !== 0 || this.person.dy !== 0) { 
 				let size=this.person.pic.height;
 				this.context.beginPath();
 				this.context.fillStyle = "white";
 				this.context.rect(this.person.x+1, this.person.y+1, size-2, size-2);
 				this.context.fill()
-		
+				
 				const x = this.person.x + this.person.dx;
 				const y = this.person.y + this.person.dy;
 
@@ -125,7 +171,7 @@ import { Enemies } from "./Enemies.js";
 				}
 			}
 			else{
-				this.#checkObjCollision(this.person.x,this.person.y);
+				this.#checkEnemCollision(this.person.x,this.person.y);
 			}
 
 			let character;
@@ -139,12 +185,11 @@ import { Enemies } from "./Enemies.js";
 			this.context.drawImage(character, this.person.x, this.person.y);
 			this.coins.draw();
 			this.enemies.draw();
-			this.time=window.requestAnimationFrame(this.drawFrame.bind(this));
-	}
+		}
 	}
 
 	/**
-	 * Проверяет столкновение 
+	 * Проверяет столкновение персонажа со стенами
 	 * 
 	 * @param {number} x координата персонажа по x
 	 * @param {number} y координата персонажа по y
@@ -162,19 +207,19 @@ import { Enemies } from "./Enemies.js";
 			return true;
 			}
 		}
-		this.#checkObjCollision(x,y); 
+		this.#checkCoinsCollision(x,y); 
 
 		return false;
 	}
 
 	/**
-	 * Проверяет столкновение c объектами на карте
+	 * Проверяет столкновение c монетами на карте
 	 * @private
 	 * @param {number} x координата персонажа по x
 	 * @param {number} y координата персонажа по y
 	*/
-	#checkObjCollision(x,y){
-	 	let sizeC=this.coins.pic.height;
+	#checkCoinsCollision(x,y){
+	 	const sizeC=this.coins.pic.height;
 		let coinX,coinY,difX,difY;
 
 	 	for(let i=0;i< this.coins.place.length; i++){
@@ -189,10 +234,18 @@ import { Enemies } from "./Enemies.js";
 				this.person.addMoney();
 	 		}
 	 	}
-		
+	}
+
+	/**
+	 * Проверяет столкновение c врагами на карте
+	 * @private
+	 * @param {number} x координата персонажа по x
+	 * @param {number} y координата персонажа по y
+	*/
+	#checkEnemCollision(x,y){ 
 		if(!this.person.wounded){	
-			let sizeE=this.enemies.pic.height;
-			let enemX,enemY;
+			const sizeE=this.enemies.pic.height;
+			let enemX,enemY,difX,difY;
 			for(let i=0;i< this.enemies.place.length; i++){
 				enemX = this.enemies.place[i].x;
 				enemY = this.enemies.place[i].y;

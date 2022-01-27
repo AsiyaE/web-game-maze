@@ -3,22 +3,34 @@ import { Maze } from "./Maze.js";
 export class Coins{
 	/** @type {Maze} */
 	maze;
+
+	/** @type {{x: number, y: number }[]} */
 	place=[];
+
+	/** @type {HTMLImageElement} */
 	pic=new Image();
 
+	/**
+	 * @param {Maze} maze объект лабиринт
+	 */
 	constructor(maze){
 		this.maze=maze;
 		this.pic.src="img/coins.png"; 		// this.pic= document.getElementById("coin");
 	}
 
-	setPlace(){
-		this.place[0]={x:18,y:200};
-		this.place[1]={x:18,y:20};
-		this.place[2]={x:262,y:250};
-		this.place[3]={x:70,y:415};
+	/**
+	 * Задает положение монет в лабиринте
+	 * @param {{x: number, y: number }[]} enemLocation координаты
+	 */
+	setPlace(coinsLocation){
+		this.place = JSON.parse(JSON.stringify(coinsLocation));
 	}
+
+	/**
+	 * Рисует разный ракурс монет в зависимости от кадра 
+	 */
 	draw(){
-		let size=this.pic.height;
+		const size=this.pic.height;
 		let offset = size*this.maze.frame;
 
 		let x, y;

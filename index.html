@@ -7,15 +7,10 @@
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<title>Labyrinth</title>
 </head>
+
 <body>
 	<main class="content">
 		<h1>Лабиринт</h1>
-		<div class="buttons">
-			<button type="button" data-level="easy">easy level</button>
-			<button type="button" data-level="medium">medium level</button>
-			<button type="button"data-level="hard">hard level</button>
-		</div>
-
 		<div class="person">
 			<img id="person" src="img/ghost.png">
 			<div class="life">
@@ -29,6 +24,15 @@
 			<img  class="snake" src="img/snake.png">
 		</div>
 	</main>
+
+	<div class="buttons">
+		<button type="button" data-level="easy" id="1">easy level</button>
+		<button type="button" data-level="medium"id="2">medium level</button>
+		<button type="button"data-level="hard" id="3">hard level</button>
+	</div>
+
+	<span id="result"></span>
+	
 	<script type="module" src="scripts/index.js"></script>
 </body>
 </html>

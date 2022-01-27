@@ -5,19 +5,29 @@ export class Person{
 	
 	/** @type {number} */
 	#life=3;
+
 	/** @type {number} */
 	#money=0;
+
 	/** @type {number} */
 	x=0;
+
 	/** @type {number} */
 	y=0;
+
 	/** @type {number} */
 	dx=0;
+
 	/** @type {number} */
 	dy=0;
+
 	/** @type {boolean} */
 	wounded=false;
 
+	/** @type {number} */
+	curLevel=1;
+
+	/** @type {HTMLImageElement} */
 	picWounded=new Image();
 
 	constructor(){
@@ -40,28 +50,41 @@ export class Person{
 	 */
 	deleteLife(){
 		const status= document.querySelectorAll( 'div.person span' );
-		if(this.#life>=1){
+		if(this.#life>1){
 			this.wounded=true;
 			setTimeout(()=>{this.wounded=false},3000);
 			this.#life--;
 			status[0].textContent=this.#life;
 		}
 		else{
+			this.#life--;
+			status[0].textContent=this.#life;
 			this.die();
 		}
 		
 	}
+
 	/**
 	 * Выводит статус игрока
 	 */
-	getPersonStatus(){
+	showPersonStatus(){
 		const status= document.querySelectorAll( 'div.person span' );
 		status[0].textContent=this.#life;
 		status[1].textContent=this.#money;
 	}
 
 	/**
+	 * Возвращает количество жизней
+	 */
+	getLifeStatus(){
+		return this.#life;
+	}
+
+
+	/**
 	 * Задает местоположение игрока в лабиринте
+	 * @param {number} x координата x персонажа
+	 * @param {number} y координата y персонажа
 	 */
 	setLocation(x,y){
 		this.x=x;

@@ -7,10 +7,19 @@ export class Enemies{
 	
 	/** @type {Maze} */
 	maze;
+
+	/** @type {{x: number, y: number }[]} */
 	place=[];
+
+	/** @type {{dx: number, dy: number }[]} */
 	direction=[];
+
+	/** @type {HTMLImageElement} */
 	pic=new Image();
 
+	/**
+	 * @param {Maze} maze объект лабиринт
+	 */
 	constructor(maze){
 		this.maze=maze;
 		this.pic.src="img/snake.png";
@@ -18,15 +27,14 @@ export class Enemies{
 
 	/**
 	 * Задает положение и направление движения врагов
+	 * @param {{x: number, y: number }[]} enemLocation координаты
 	 */
-	setPlace(){ /*временно*/
+	setPlace(enemLocation){ 
 
-		this.place[0]={x:17,y:160};
-		this.place[1]={x:260,y:13};
-		this.place[2]={x:260,y:410};
-		this.direction[0]={dx:1,dy:0};
-		this.direction[1]={dx:1,dy:0};
-		this.direction[2]={dx:1,dy:0};
+		this.place = JSON.parse(JSON.stringify(enemLocation));
+		for(let i=0;i<this.place.length;i++){
+			this.direction[i]={dx:1,dy:0};
+		}
 	}
 
 	/**
@@ -40,8 +48,8 @@ export class Enemies{
 			const x = this.place[i].x+this.direction[i].dx;
 			const y = this.place[i].y+this.direction[i].dy;
 
-			if (this.checkForCollisionWithWall(x,y)) { 
-				this.changeDirection(i);
+			if (this.#checkForCollisionWithWall(x,y)) { 
+				this.#changeDirection(i);
 				this.place[i].x+=this.direction[i].dx;
 			}
 			else{
@@ -58,7 +66,7 @@ export class Enemies{
 	 * @param {number} x координата персонажа по x
 	 * @param {number} y координата персонажа по y
 	 */
-	checkForCollisionWithWall(x,y){
+	#checkForCollisionWithWall(x,y){
 		const size=this.pic.height;
 		let imgData = this.maze.context.getImageData(x, y, size+1, size);
 		let pixels = imgData.data;
@@ -74,7 +82,12 @@ export class Enemies{
 		}
 		return false;
 	}
-	changeDirection(i){
+
+	/**
+	 * Изменяет направление движения врага на противоположное
+	 * @param {number} i порядковый номер врага
+	 */
+	#changeDirection(i){
 		this.direction[i].dx*=-1;
 	}
 }
